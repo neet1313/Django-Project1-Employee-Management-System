@@ -8,6 +8,8 @@
   </head>
   <body>
     <div class="container">
+      {% csrf_token %}
+
       <h1>Office Employee Management System</h1>
       <a class="btn btn-primary" href="/allEmp" role="button">View All Employees</a>
       <a class="btn btn-primary" href="/addEmp" role="button">Add an Employee</a>

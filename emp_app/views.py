@@ -1,8 +1,10 @@
 from django.shortcuts import render
-from .models import Employee, Role, Department
-from .forms import AddEmployeeForm
+from .models import Employee
+from .forms import AddEmployeeForm, FilterEmployeeForm
 from django.http import HttpResponse
 from datetime import datetime
+from django.db.models import Q
+
 # Create your views here.
 
 
@@ -41,7 +43,6 @@ def addEmp(request):
         context = {
             'form': form
         }
-        print(form)
         return render(request, 'addEmp.html', context)
     else:
         return HttpResponse('An Exception Occured while adding the employee!')
@@ -64,4 +65,29 @@ def removeEmp(request, emp_id=0):
 
 
 def filterEmp(request):
-    return render(request, 'filterEmp.html')
+    if request.method == "POST":
+        form = FilterEmployeeForm(request.POST)
+
+        name = request.POST['name']
+        dept = request.POST['dept']
+        role = request.POST['role']
+        emps = Employee.objects.all()
+
+        if name:
+            emps = emps.filter(Q(first_name__icontains=name)
+                               | Q(second_name__icontains=name))
+        if dept:
+            emps = emps.filter(dept__name=dept)
+        if role:
+            emps = emps.filter(role__role=role)
+
+        context = {
+            'emps': emps
+        }
+
+        return render(request, 'allEmp.html', context)
+
+    elif request.method == "GET":
+        return render(request, 'filterEmp.html')
+    else:
+        return HttpResponse('There was an Error!')
