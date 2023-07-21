@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import Employee, Role, Department
 from .forms import AddEmployeeForm
 from django.http import HttpResponse
+from datetime import datetime
 # Create your views here.
 
 
@@ -22,15 +23,16 @@ def addEmp(request):
         form = AddEmployeeForm(request.POST)
 
         if form.is_valid():
-            newEmp = Employee(first_name=form.cleaned_data['first_name'],
-                              second_name=form.cleaned_data['second_name'],
-                              dept=form.cleaned_data['dept'],
-                              salary=form.cleaned_data['salary'],
-                              bonus=form.cleaned_data['bonus'],
-                              role=form.cleaned_data['role'],
-                              phone=form.cleaned_data['phone'],
-                              hire_date=form.cleaned_data['hire_date']
-                              )
+            first_name = request.POST['first_name']
+            second_name = request.POST['second_name']
+            dept = request.POST['dept']
+            salary = int(request.POST['salary'])
+            bonus = int(request.POST['bonus'])
+            role = int(request.POST['role'])
+            phone = int(request.POST['phone'])
+
+            newEmp = Employee(first_name=first_name, second_name=second_name, dept_id=dept,
+                              salary=salary, bonus=bonus, role_id=role, phone=phone, hire_date=datetime.now())
             newEmp.save()
 
             return HttpResponse('Employee Added Successfully')
@@ -41,10 +43,24 @@ def addEmp(request):
         }
         print(form)
         return render(request, 'addEmp.html', context)
+    else:
+        return HttpResponse('An Exception Occured while adding the employee!')
 
 
-def removeEmp(request):
-    return render(request, 'removeEmp.html')
+def removeEmp(request, emp_id=0):
+    if emp_id:
+        try:
+            removeEmp = Employee.objects.get(id=emp_id)
+            removeEmp.delete()
+            return HttpResponse('Employee Successfully Deleted!')
+        except:
+            return HttpResponse('An Error occured while deleting')
+
+    emps = Employee.objects.all()
+    context = {
+        'emps': emps
+    }
+    return render(request, 'removeEmp.html', context)
 
 
 def filterEmp(request):

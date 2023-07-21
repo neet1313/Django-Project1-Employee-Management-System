@@ -6,5 +6,6 @@ urlpatterns = [
     path('allEmp', views.allEmp, name='allEmp'),
     path('addEmp', views.addEmp, name='addEmp'),
     path('removeEmp', views.removeEmp, name='removeEmp'),
+    path('removeEmp/<int:emp_id>', views.removeEmp, name='removeEmp'),
     path('filterEmp', views.filterEmp, name='filterEmp')
 ]
